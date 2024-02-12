@@ -212,13 +212,13 @@ export class OpenAIWrapper {
         'OpenAI.Completions.prototype.create',
         'OpenAI.Chat.Completions.prototype.create',
       ];
-      let xRequestId: string | null = null;
+      let requestId: string | null = null;
       patch({
         module: openaiModule,
         symbols,
         resolver: (...args) => {
           const log = OpenAIWrapper.resolver(...args);
-          if (xRequestId) log.xRequestId = xRequestId;
+          if (requestId) log.requestId = requestId;
           return log;
         },
         log,
@@ -226,7 +226,7 @@ export class OpenAIWrapper {
         collectStreamedResponse: OpenAIWrapper.collectStreamedResponse,
         processUnawaitedResponse: async (promise: APIPromise<any>) => {
           const { data, response } = await promise.withResponse();
-          xRequestId = response.headers.get('x-request-id');
+          requestId = response.headers.get('x-request-id');
           return data;
         },
       });
